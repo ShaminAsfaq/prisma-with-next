@@ -8,13 +8,33 @@
   height: 100vh;
 }
 
+.movieList {
+  list-style: none;
+  padding: 0;
+  margin: 40px 0;
+}
+
+.movieList li {
+  margin-bottom: 20px;
+}
+
+.movieList span {
+  display: block;
+  margin-bottom: 5px;
+}
+
+
 .main {
-  padding: 5rem 0;
+  /* padding: 5rem 0; */
   flex: 1;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  /* flex-direction: column; */
+  /* justify-content: space-between; */
+  align-items: flex-start;
+  /* -- */
+  width: 90%;
+  margin-top: 8px;
+  /* background-color: mediumaquamarine; */
 }
 
 .footer {

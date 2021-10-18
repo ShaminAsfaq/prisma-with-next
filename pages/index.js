@@ -1,8 +1,67 @@
+import * as React from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import { useState } from 'react';
 
-export default function Home() {
+import { PrismaClient } from '.prisma/client';
+import { TextareaAutosize } from '@mui/material';
+
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import { Button } from '@mui/material';
+
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import MovieIcon from '@mui/icons-material/Movie';
+import { Avatar } from '@mui/material';
+import { Typography } from '@mui/material';
+
+const prisma = new PrismaClient();
+
+export default function Home({ data }) {
+  const [formData, setFormData] = useState({});
+
+
+  const [title, setTitle] = useState('');
+  const [year, setYear] = useState('');
+  const [description, setDescription] = useState('');
+  const [slug, setSlug] = useState('');
+
+  const [titleError, setTitleError] = useState(false);
+  const [yearError, setYearError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+  const [slugError, setSlugError] = useState(false);
+
+  const [list, setList] = useState([]);
+
+  const saveMovie = async (e) => {
+    e.preventDefault();
+
+    const singleMovie = {
+      title, year, description, slug
+    }
+
+    if (titleError || yearError || descriptionError || slugError) {
+      alert('Value Missing');
+    } else if(title.length === 0 || year.length === 0 || description.length === 0 || slug.length === 0) {
+      alert('Value Missing');
+    } else {
+
+      const response = await fetch('/api/movies', {
+        method: 'POST',
+        body: JSON.stringify(singleMovie)
+      });
+
+      setList([...list, singleMovie]);
+      console.log(list);
+      //  ERROR TODO
+      return await response.json();
+    }
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -11,21 +70,124 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-      
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Box
+          component="form"
+          sx={{
+            '& .MuiTextField-root': { m: 1 },
+          }}
+          noValidate
+          autoComplete="off"
+          style={{width: '30%'}}
         >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+          <div style={{display: 'flex', flexDirection: 'column', backgroundColor: 'azure', padding: '8px'}}>
+            <TextField
+              error={titleError}
+              required
+              id="outlined-basic"
+              label="Title"
+              placeholder="Title"
+              variant="outlined"
+              value={title}
+              onChange={e => {
+                  if (e.target.value?.length === 0) {
+                    setTitleError(true);
+                  }
+                  setTitle(e.target.value);
+                }
+              }
+            />
+            <TextField
+              error={yearError}
+              required
+              id="outlined-basic"
+              label="Year"
+              placeholder="Year"
+              variant="outlined"
+              value={year}
+              onChange={e => {
+                if (e.target.value?.length === 0) {
+                  setYearError(true);
+                }
+                setYear(e.target.value);
+              }
+            }
+            />
+            <TextField
+              error={descriptionError}
+              id="outlined-textarea"
+              label="Description"
+              placeholder="description"
+              multiline
+              rows={4}
+              value={description}
+              onChange={e => {
+                if (e.target.value?.length === 0) {
+                  setDescriptionError(true);
+                }
+                setDescription(e.target.value);
+              }
+            }
+            />
+            <TextField
+              error={slugError}
+              required
+              id="outlined-basic"
+              label="Slug"
+              placeholder="Slug"
+              variant="outlined"
+              value={slug}
+              onChange={e => {
+                if (e.target.value?.length === 0) {
+                  setSlugError(true);
+                }
+                setSlug(e.target.value);
+              }
+            }
+            />
+            <Button style={{margin: 'auto'}} onClick={saveMovie} variant="outlined">Add Movie</Button>
+          </div>
+        </Box>
+
+        <List style={{backgroundColor: 'aliceblue', marginLeft: '8px'}} sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+          {
+            data.map(item => {
+              return (
+                <ListItemButton key={item?.id}>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <MovieIcon />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={item.title} secondary={
+                    <React.Fragment>
+                      <Typography
+                        sx={{ display: 'inline' }}
+                        component="span"
+                        variant="body2"
+                        color="text.primary"
+                      >
+                        {item.year}
+                      </Typography>
+                      {` | ${item.description}`}
+                    </React.Fragment>
+                  } />
+                </ListItemButton>
+              );
+            })
+          }
+        </List>
+      </main>
     </div>
   )
+}
+
+export async function getServerSideProps() {
+
+  const movieList = await prisma.movie.findMany();
+
+  return {
+    props: {
+      data: movieList
+    }
+  }
 }
