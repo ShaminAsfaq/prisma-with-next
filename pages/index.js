@@ -19,6 +19,8 @@ import MovieIcon from '@mui/icons-material/Movie';
 import { Avatar } from '@mui/material';
 import { Typography } from '@mui/material';
 
+import axios from 'axios';
+
 const prisma = new PrismaClient();
 
 export default function Home({ data }) {
@@ -44,21 +46,19 @@ export default function Home({ data }) {
       title, year, description, slug
     }
 
+    console.log(singleMovie);
+
     if (titleError || yearError || descriptionError || slugError) {
-      alert('Value Missing');
+      alert('Value Missing 1');
     } else if(title.length === 0 || year.length === 0 || description.length === 0 || slug.length === 0) {
-      alert('Value Missing');
+      alert('Value Missing 2');
     } else {
+      const response = await axios.post('/api/movies', JSON.stringify(singleMovie));
 
-      const response = await fetch('/api/movies', {
-        method: 'POST',
-        body: JSON.stringify(singleMovie)
-      });
-
-      setList([...list, singleMovie]);
-      console.log(list);
+      // setList([...data, singleMovie]);
+      console.log(response);
       //  ERROR TODO
-      return await response.json();
+      return response;
     }
   }
 
@@ -79,7 +79,7 @@ export default function Home({ data }) {
           autoComplete="off"
           style={{width: '30%'}}
         >
-          <div style={{display: 'flex', flexDirection: 'column', backgroundColor: 'azure', padding: '8px'}}>
+          <div style={{display: 'flex', flexDirection: 'column', padding: '8px'}}>
             <TextField
               error={titleError}
               required
@@ -91,6 +91,8 @@ export default function Home({ data }) {
               onChange={e => {
                   if (e.target.value?.length === 0) {
                     setTitleError(true);
+                  } else {
+                    setTitleError(false);
                   }
                   setTitle(e.target.value);
                 }
@@ -107,6 +109,8 @@ export default function Home({ data }) {
               onChange={e => {
                 if (e.target.value?.length === 0) {
                   setYearError(true);
+                } else {
+                  setYearError(false);
                 }
                 setYear(e.target.value);
               }
@@ -123,6 +127,8 @@ export default function Home({ data }) {
               onChange={e => {
                 if (e.target.value?.length === 0) {
                   setDescriptionError(true);
+                } else {
+                  setDescriptionError(false);
                 }
                 setDescription(e.target.value);
               }
@@ -139,6 +145,8 @@ export default function Home({ data }) {
               onChange={e => {
                 if (e.target.value?.length === 0) {
                   setSlugError(true);
+                } else {
+                  setSlugError(false);
                 }
                 setSlug(e.target.value);
               }
@@ -148,7 +156,7 @@ export default function Home({ data }) {
           </div>
         </Box>
 
-        <List style={{backgroundColor: 'aliceblue', marginLeft: '8px'}} sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+        <List style={{marginLeft: '8px'}} sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
           {
             data.map(item => {
               return (
