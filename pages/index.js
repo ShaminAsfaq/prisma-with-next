@@ -21,6 +21,8 @@ import { Typography } from '@mui/material';
 
 import axios from 'axios';
 
+import Link from 'next/link';
+
 const prisma = new PrismaClient();
 
 export default function Home({ data }) {
@@ -51,7 +53,7 @@ export default function Home({ data }) {
       }
 
       const response = await axios.post('/api/movies', singleMovie);
-      setList([...data, singleMovie]);
+      setList([...list, singleMovie]);
       return response;
     }
   }
@@ -156,26 +158,28 @@ export default function Home({ data }) {
           {
             list.map((item, index) => {
               return (
-                <ListItemButton key={index}>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <MovieIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary={item.title} secondary={
-                    <React.Fragment>
-                      <Typography
-                        sx={{ display: 'inline' }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      >
-                        {item.year}
-                      </Typography>
-                      {` | ${item.description}`}
-                    </React.Fragment>
-                  } />
-                </ListItemButton>
+                <Link href={`/movies/${item.slug}`}>
+                  <ListItemButton key={index}>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <MovieIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText primary={item.title} secondary={
+                      <React.Fragment>
+                        <Typography
+                          sx={{ display: 'inline' }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          {item.year}
+                        </Typography>
+                        {` | ${item.description}`}
+                      </React.Fragment>
+                    } />
+                  </ListItemButton>
+                </Link>
               );
             })
           }
