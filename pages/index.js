@@ -24,8 +24,6 @@ import axios from 'axios';
 const prisma = new PrismaClient();
 
 export default function Home({ data }) {
-  const [formData, setFormData] = useState({});
-
 
   const [title, setTitle] = useState('');
   const [year, setYear] = useState('');
@@ -37,27 +35,23 @@ export default function Home({ data }) {
   const [descriptionError, setDescriptionError] = useState(false);
   const [slugError, setSlugError] = useState(false);
 
-  const [list, setList] = useState([]);
+  const [list, setList] = useState(data);
 
   const saveMovie = async (e) => {
     e.preventDefault();
 
-    const singleMovie = {
-      title, year, description, slug
-    }
-
-    console.log(singleMovie);
-
-    if (titleError || yearError || descriptionError || slugError) {
-      alert('Value Missing 1');
-    } else if(title.length === 0 || year.length === 0 || description.length === 0 || slug.length === 0) {
-      alert('Value Missing 2');
+    if (titleError || yearError || descriptionError || slugError || title.length === 0 || year.length === 0 || description.length === 0 || slug.length === 0) {
+      alert('Something is not right.');
     } else {
-      const response = await axios.post('/api/movies', JSON.stringify(singleMovie));
+      const singleMovie = {
+        title,
+        year: Number(year),
+        description,
+        slug
+      }
 
-      // setList([...data, singleMovie]);
-      console.log(response);
-      //  ERROR TODO
+      const response = await axios.post('/api/movies', singleMovie);
+      setList([...data, singleMovie]);
       return response;
     }
   }
@@ -107,12 +101,14 @@ export default function Home({ data }) {
               variant="outlined"
               value={year}
               onChange={e => {
-                if (e.target.value?.length === 0) {
+                const found = e.target.value;
+                setYear(found);
+
+                if (found?.length === 0 || isNaN((Number(found))))  {
                   setYearError(true);
                 } else {
                   setYearError(false);
                 }
-                setYear(e.target.value);
               }
             }
             />
@@ -158,9 +154,9 @@ export default function Home({ data }) {
 
         <List style={{marginLeft: '8px'}} sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
           {
-            data.map(item => {
+            list.map((item, index) => {
               return (
-                <ListItemButton key={item?.id}>
+                <ListItemButton key={index}>
                   <ListItemAvatar>
                     <Avatar>
                       <MovieIcon />
