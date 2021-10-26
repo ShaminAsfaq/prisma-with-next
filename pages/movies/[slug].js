@@ -8,6 +8,9 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
 import Typography from '@mui/material/Typography';
+import React from "react";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Link from "next/link";
 
 
 
@@ -15,20 +18,23 @@ const prisma = new PrismaClient();
 
 export default function Movie({ movie }) {
     return (
-        <div>
-            <Card sx={{ maxWidth: 345 }}>
+        <span className={styles.movieDetails}> 
+            <Card sx={{ maxWidth: 345 }} style={{width: '100%', textAlign: 'end'}}>
                 <CardActionArea>
                     <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                        { movie.title }
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        { movie.description }
-                    </Typography>
+                        <Link href={`/`}>
+                            <ArrowBackIcon/>
+                        </Link>
+                        <Typography gutterBottom variant="h5" component="div">
+                            { movie.title }
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            { movie.description }
+                        </Typography>
                     </CardContent>
                 </CardActionArea>
             </Card>
-        </div>
+        </span>
     )
 }
 

@@ -133,6 +133,13 @@
   margin-left: 0.5rem;
 }
 
+.movieDetails {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
 @media (max-width: 600px) {
   .grid {
     width: 100%;

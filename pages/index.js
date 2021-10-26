@@ -39,6 +39,18 @@ export default function Home({ data }) {
 
   const [list, setList] = useState(data);
 
+  const setEverythingToDefault = () => {
+    setTitle('');
+    setYear('');
+    setDescription('');
+    setSlug('');
+
+    setTitleError(false);
+    setYearError(false);
+    setDescriptionError(false);
+    setSlugError(false);
+  }
+
   const saveMovie = async (e) => {
     e.preventDefault();
 
@@ -54,7 +66,7 @@ export default function Home({ data }) {
 
       const response = await axios.post('/api/movies', singleMovie);
       setList([...list, singleMovie]);
-      return response;
+      setEverythingToDefault();
     }
   }
 
@@ -158,8 +170,8 @@ export default function Home({ data }) {
           {
             list.map((item, index) => {
               return (
-                <Link href={`/movies/${item.slug}`}>
-                  <ListItemButton key={index}>
+                <Link href={`/movies/${item.slug}`} key={index}>
+                  <ListItemButton>
                     <ListItemAvatar>
                       <Avatar>
                         <MovieIcon />
